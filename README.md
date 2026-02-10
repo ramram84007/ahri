@@ -1,1 +1,256 @@
-# ahri
+<!DOCTYPE html>
+<html lang="th">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Ahri | The Nine-Tailed Fox - Definitive Edition</title>
+    <link href="https://fonts.googleapis.com/css2?family=Prompt:wght@300;400;600;700&display=swap" rel="stylesheet">
+
+    <style>
+        :root {
+            --accent: #ec4899;
+            --bg: url("https://ddragon.leagueoflegends.com/cdn/img/champion/splash/Ahri_0.jpg");
+        }
+
+        * { box-sizing: border-box; scroll-behavior: smooth; }
+
+        body {
+            margin: 0;
+            font-family: 'Prompt', sans-serif;
+            color: #f3f4f6;
+            background: linear-gradient(rgba(2, 6, 23, 0.9), rgba(2, 6, 23, 0.9)), var(--bg) center/cover fixed;
+            transition: background 0.6s ease;
+            overflow-x: hidden;
+        }
+
+        /* ===== CHARM EFFECT & PARTICLES ===== */
+        #charmOverlay {
+            position: fixed;
+            inset: 0;
+            background: radial-gradient(circle at 50% 50%, rgba(236,72,153,.6), transparent 70%);
+            opacity: 0;
+            pointer-events: none;
+            z-index: 9999;
+        }
+        .charm-anim { animation: charmBurst 1.4s ease-out forwards; }
+        @keyframes charmBurst {
+            0% { opacity: 0; transform: scale(1); }
+            40% { opacity: 1; transform: scale(1.1); }
+            100% { opacity: 0; transform: scale(1.4); }
+        }
+        .particle {
+            position: fixed;
+            pointer-events: none;
+            background: var(--accent);
+            border-radius: 50%;
+            z-index: 10000;
+            filter: blur(2px);
+            animation: particleFly 1.5s ease-out forwards;
+        }
+        @keyframes particleFly {
+            0% { transform: translate(0,0) scale(1); opacity: 1; }
+            100% { transform: translate(var(--mx), var(--my)) scale(0); opacity: 0; }
+        }
+
+        /* ===== UI COMPONENTS ===== */
+        .header { text-align: center; padding: 60px 20px; }
+        .header h1 { font-size: 70px; color: var(--accent); margin: 0; text-shadow: 0 0 30px rgba(236,72,153,.6); }
+
+        .skin-panel { max-width: 900px; margin: 0 auto 30px; display: grid; grid-template-columns: repeat(3, 1fr); gap: 15px; padding: 0 20px; }
+        
+        .btn {
+            padding: 16px; border-radius: 15px; background: #020617; border: 2px solid var(--accent);
+            color: var(--accent); font-weight: 700; cursor: pointer; transition: 0.3s;
+        }
+        .btn:hover:not(:disabled) { background: var(--accent); color: #020617; box-shadow: 0 0 25px var(--accent); }
+        .btn:disabled { opacity: .35; cursor: not-allowed; }
+
+        .lock-btn { width: 220px; background: var(--accent); color: #020617; }
+        .profile-btn { width: 220px; background: transparent; }
+
+        section { max-width: 1100px; margin: auto; padding: 60px 20px; }
+        h2 { font-size: 42px; color: var(--accent); border-bottom: 3px solid var(--accent); display: inline-block; margin-bottom: 40px; }
+
+        .character-box { display: grid; grid-template-columns: repeat(auto-fit, minmax(320px,1fr)); gap: 50px; }
+        .character-box img { width: 100%; border-radius: 30px; box-shadow: 0 0 40px rgba(0,0,0,.8); border: 2px solid var(--accent); }
+
+        .info-list p { font-size: 1.1rem; margin: 15px 0; border-bottom: 1px solid rgba(255,255,255,.1); padding-bottom: 10px; }
+        .info-list b { color: var(--accent); }
+
+        .lore-card { background: rgba(15,23,42,.55); border-left: 5px solid var(--accent); padding: 25px; margin-bottom: 25px; border-radius: 0 15px 15px 0; line-height: 2; }
+
+        /* ===== SKILLS VIDEO GRID ===== */
+        .skills-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 25px; }
+        .skill-card { background: #020617; border-radius: 20px; padding: 25px; border: 1px solid rgba(236,72,153,.2); transition: .4s; }
+        .skill-card:hover { transform: translateY(-10px); border-color: var(--accent); box-shadow: 0 0 35px rgba(236,72,153,0.3); }
+        .skill-header { display: flex; align-items: center; gap: 15px; margin-bottom: 15px; }
+        .skill-icon { width: 60px; height: 60px; border: 2px solid var(--accent); border-radius: 10px; }
+        .skill-key { font-size: 28px; font-weight: 800; color: var(--accent); }
+        .skill-name { font-size: 1.2rem; font-weight: 600; }
+        
+        .skill-video-container { margin: 15px 0; border-radius: 12px; overflow: hidden; background: #000; line-height: 0; border: 1px solid rgba(255,255,255,0.1); }
+        .skill-video-container video { width: 100%; height: auto; }
+        .skill-desc { font-size: 0.95rem; line-height: 1.6; opacity: 0.8; }
+
+        footer { text-align: center; padding: 80px; background: #010409; opacity: .7; }
+    </style>
+</head>
+<body>
+
+<div id="charmOverlay"></div>
+
+<div class="header">
+    <h1>AHRI</h1>
+    <p style="letter-spacing:5px;opacity:.7;">THE NINE-TAILED FOX</p>
+</div>
+
+<div class="skin-panel">
+    <button class="btn" onclick="setSkin('classic')">Classic</button>
+    <button class="btn" onclick="setSkin('kda')">K/DA</button>
+    <button class="btn" onclick="setSkin('spirit')">Spirit Blossom</button>
+</div>
+
+<div style="text-align:center;padding-bottom:50px;">
+    <button class="btn lock-btn" id="lockBtn" onclick="lockChampion()">LOCK IN</button>
+    <button class="btn profile-btn" id="viewBtn" disabled onclick="viewProfile()">VIEW PROFILE</button>
+</div>
+
+<div id="fullProfile" style="display:none;">
+    <section>
+        <h2>ข้อมูลตัวละคร</h2>
+        <div class="character-box">
+            <img id="mainImg" src="https://ddragon.leagueoflegends.com/cdn/img/champion/loading/Ahri_0.jpg">
+            <div class="info-list">
+                <p><b>ชื่อ:</b> Ahri</p>
+                <p><b>เผ่า:</b> Vastaya</p>
+                <p><b>ถิ่นกำเนิด:</b> Ionia</p>
+                <p><b>บทบาท:</b> Mage / Assassin</p>
+                <p><b>ธีม:</b> เสน่ห์, จิตวิญญาณ, ตัวตน</p>
+            </div>
+        </div>
+    </section>
+
+    <section>
+        <h2>ทักษะและการเล่น</h2>
+        <div class="skills-grid">
+            <div class="skill-card">
+                <div class="skill-header">
+                    <img class="skill-icon" src="https://ddragon.leagueoflegends.com/cdn/14.1.1/img/passive/Ahri_Passive.png">
+                    <div><div class="skill-key" style="font-size:18px;">PASSIVE</div><div class="skill-name">Essence Theft</div></div>
+                </div>
+                <div class="skill-video-container">
+                    <video loop muted autoplay playsinline><source src="https://d28xe8vt774jo5.cloudfront.net/champion-abilities/0103/ability_0103_P1.mp4" type="video/mp4"></video>
+                </div>
+                <div class="skill-desc">เมื่อกำจัดศัตรูได้ Ahri จะฟื้นฟูพลังชีวิตตัวเอง</div>
+            </div>
+
+            <div class="skill-card">
+                <div class="skill-header">
+                    <img class="skill-icon" src="https://ddragon.leagueoflegends.com/cdn/14.1.1/img/spell/AhriOrbofDeception.png">
+                    <div><div class="skill-key">Q</div><div class="skill-name">Orb of Deception</div></div>
+                </div>
+                <div class="skill-video-container">
+                    <video loop muted autoplay playsinline><source src="https://d28xe8vt774jo5.cloudfront.net/champion-abilities/0103/ability_0103_Q1.mp4" type="video/mp4"></video>
+                </div>
+                <div class="skill-desc">สร้างความเสียหายเวทขาไป และความเสียหายจริงขากลับ</div>
+            </div>
+
+            <div class="skill-card">
+                <div class="skill-header">
+                    <img class="skill-icon" src="https://ddragon.leagueoflegends.com/cdn/14.1.1/img/spell/AhriFoxFire.png">
+                    <div><div class="skill-key">W</div><div class="skill-name">Fox-Fire</div></div>
+                </div>
+                <div class="skill-video-container">
+                    <video loop muted autoplay playsinline><source src="https://d28xe8vt774jo5.cloudfront.net/champion-abilities/0103/ability_0103_W1.mp4" type="video/mp4"></video>
+                </div>
+                <div class="skill-desc">เรียกเปลวไฟติดตามเป้าหมายและเพิ่มความเร็วเคลื่อนที่</div>
+            </div>
+
+            <div class="skill-card">
+                <div class="skill-header">
+                    <img class="skill-icon" src="https://ddragon.leagueoflegends.com/cdn/14.1.1/img/spell/AhriSeduce.png">
+                    <div><div class="skill-key">E</div><div class="skill-name">Charm</div></div>
+                </div>
+                <div class="skill-video-container">
+                    <video loop muted autoplay playsinline><source src="https://d28xe8vt774jo5.cloudfront.net/champion-abilities/0103/ability_0103_E1.mp4" type="video/mp4"></video>
+                </div>
+                <div class="skill-desc">สะกดจิตให้ศัตรูเดินหลงเสน่ห์เข้ามาหาเธอ</div>
+            </div>
+
+            <div class="skill-card">
+                <div class="skill-header">
+                    <img class="skill-icon" src="https://ddragon.leagueoflegends.com/cdn/14.1.1/img/spell/AhriTumble.png">
+                    <div><div class="skill-key">R</div><div class="skill-name">Spirit Rush</div></div>
+                </div>
+                <div class="skill-video-container">
+                    <video loop muted autoplay playsinline><source src="https://d28xe8vt774jo5.cloudfront.net/champion-abilities/0103/ability_0103_R1.mp4" type="video/mp4"></video>
+                </div>
+                <div class="skill-desc">พุ่งตัวอย่างรวดเร็วและโจมตีศัตรูรอบข้าง</div>
+            </div>
+        </div>
+    </section>
+
+    <footer>
+        <button class="btn" onclick="window.scrollTo(0,0)">BACK TO TOP</button>
+        <p style="margin-top:30px;">League of Legends © Riot Games</p>
+    </footer>
+</div>
+
+<script>
+    const overlay = document.getElementById("charmOverlay");
+    const profile = document.getElementById("fullProfile");
+    const lockBtn = document.getElementById("lockBtn");
+    const viewBtn = document.getElementById("viewBtn");
+
+    function setSkin(type){
+        const root = document.documentElement;
+        const img = document.getElementById("mainImg");
+        if(type==="classic"){
+            root.style.setProperty("--accent","#ec4899");
+            root.style.setProperty("--bg","url('https://ddragon.leagueoflegends.com/cdn/img/champion/splash/Ahri_0.jpg')");
+            img.src="https://ddragon.leagueoflegends.com/cdn/img/champion/loading/Ahri_0.jpg";
+        }
+        if(type==="kda"){
+            root.style.setProperty("--accent","#a855f7");
+            root.style.setProperty("--bg","url('https://ddragon.leagueoflegends.com/cdn/img/champion/splash/Ahri_27.jpg')");
+            img.src="https://ddragon.leagueoflegends.com/cdn/img/champion/loading/Ahri_27.jpg";
+        }
+        if(type==="spirit"){
+            root.style.setProperty("--accent","#22d3ee");
+            root.style.setProperty("--bg","url('https://ddragon.leagueoflegends.com/cdn/img/champion/splash/Ahri_7.jpg')");
+            img.src="https://ddragon.leagueoflegends.com/cdn/img/champion/loading/Ahri_7.jpg";
+        }
+    }
+
+    function lockChampion(){
+        lockBtn.innerText = "CHAMPION LOCKED";
+        lockBtn.disabled = true;
+        viewBtn.disabled = false;
+    }
+
+    function viewProfile(){
+        overlay.classList.remove("charm-anim");
+        void overlay.offsetWidth;
+        overlay.classList.add("charm-anim");
+
+        for(let i=0; i<35; i++) {
+            const p = document.createElement('div');
+            p.className = 'particle';
+            const size = Math.random() * 12 + 6 + 'px';
+            p.style.width = size; p.style.height = size;
+            p.style.left = '50%'; p.style.top = '50%';
+            p.style.setProperty('--mx', (Math.random() - 0.5) * 800 + 'px');
+            p.style.setProperty('--my', (Math.random() - 0.5) * 800 + 'px');
+            document.body.appendChild(p);
+            setTimeout(() => p.remove(), 1500);
+        }
+
+        setTimeout(()=>{
+            profile.style.display = "block";
+            profile.scrollIntoView({behavior:"smooth"});
+        }, 800);
+    }
+</script>
+
+</body>
+</html>
